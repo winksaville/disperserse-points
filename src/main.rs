@@ -1,4 +1,5 @@
 use std::f64;
+use clap::Parser;
 
 #[derive(Clone, Copy, Debug)]
 struct Point {
@@ -62,14 +63,32 @@ fn farthest_first_traversal(candidates: &[Point], k: usize) -> Vec<Point> {
     centers
 }
 
-fn main() {
-    let width = 10.0;
-    let height = 10.0;
-    let step = 1.0;
-    let num_points = 5;
+/// FFTrav: Maximize minimum distance between points in a rectangle
+#[derive(Parser, Debug)]
+#[command(name = "fftrav", version = "1.0", about = "Maximize minimum distance between points in a rectangle")]
+struct Args {
+    /// Width of the rectangle
+    #[arg(short = 'x', long, default_value_t = 10.0)]
+    width: f64,
 
-    let candidates = generate_grid(width, height, step);
-    let centers = farthest_first_traversal(&candidates, num_points);
+    /// Height of the rectangle
+    #[arg(short = 'y', long, default_value_t = 10.0)]
+    height: f64,
+
+    /// Number of points to place
+    #[arg(short = 'n', long, default_value_t = 5)]
+    num_points: usize,
+
+    /// Grid resolution (step size)
+    #[arg(short = 's', long, default_value_t = 1.0)]
+    step: f64,
+}
+
+fn main() {
+    let args = Args::parse();
+
+    let candidates = generate_grid(args.width, args.height, args.step);
+    let centers = farthest_first_traversal(&candidates, args.num_points);
 
     for (i, center) in centers.iter().enumerate() {
         println!("Point {}: ({}, {})", i + 1, center.x, center.y);
